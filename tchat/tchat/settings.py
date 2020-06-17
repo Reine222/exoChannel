@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'koz.apps.KozConfig',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -68,6 +69,15 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'tchat.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 WSGI_APPLICATION = 'tchat.wsgi.application'
 
 
@@ -100,7 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+LOGIN_URL = 'login'
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
