@@ -22,6 +22,9 @@ function insertChat(who, text, time){
     }
     var control = "";
     var date = formatAMPM(new Date());
+    // var who = ${item.user};
+    // var text = ${item.mes};
+    // var time = 5;
     
     if (who == "me"){
         control = '<li style="width:100%">' +

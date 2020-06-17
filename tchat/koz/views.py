@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from . import models
+import json
+from django.http import JsonResponse
 
 
 # Create your views here.
@@ -62,7 +64,27 @@ def register(request):
 
 
 
-# def sendmessage(request):
-#     try:
-#         postdata = json.loads(request.body.decode('utf-8'))
-#         message = 
+def sendmessage(request):
+    succes=False
+    reponse = ""
+    try:
+        postdata = json.loads(request.body.decode('utf-8'))
+        
+        message = postdata['message']
+        print(message, '////////////////////////////////////////////////////////////////////////////////////')
+        
+        # user = postdata['user']
+        # print(user, '////////////////////////////////////////////////////////////////////////////////////')
+        # message = postdata['message']
+        # print(message, '********************************************************************************')
+    
+    except Exception as e:
+        succes = False
+        reponse = "Un probleme survennu lors de l'enregistrement"
+
+    datas = {
+        'succes':succes,
+        'reponse':reponse,
+    }
+
+    return JsonResponse(datas, safe=False)
