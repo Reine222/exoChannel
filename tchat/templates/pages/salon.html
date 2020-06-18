@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <link rel="stylesheet" href="/static/style.css">
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <!-- Popper JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+        <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+        <!-- <script src="/static/script.js"></script> --> 
+
+        <title>*** Tchat ***</title>
+        
+
+    </head>
+    <body>
+        <div>
+            <nav class="navbar navbar-expand-sm bg-light justify-content-center">
+                <h2>Salon</h2>
+            </nav>
+
+            <div class="row">
+                <div class="col-md-6" style="text-align: center;"><h1>Username : </h1></div>
+                <div class="col-md-6" style="text-align: center;"><h1>{{request.user}}</h1></div>
+            </div>
+                 
+            </div><hr><br><br><br>
+
+            <div id="app">
+                <div class="card-columns container">
+                
+                    {% for sal in salon %}
+                        <div style="height: 276px;" class="card bg-primary">
+                            <div class="card-body text-center">
+                            <button v-on:click="sendsalon('{{sal.nom}}')"><a href="{% url 'home' %}" style="text-align: center;"><h1 style="color: rgb(53, 5, 49);">{{sal.nom}}</h1></a></button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                        
+                    
+                </div>
+            </div>
+            
+
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script>
+            var app = new Vue({
+                el: "#app",
+                data: {
+                    salons: "",
+                    response: "",
+                },
+                delimiters: ["${", "}"],
+
+                methods: {
+                
+                    sendsalon: function(nomSalon){
+                        var salons = nomSalon
+                        console.log(salons)
+            
+                        axios.defaults.xsrfCookieName = 'csrftoken'
+                        axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+                        axios.post('http://127.0.0.1:8000/post_salon', {
+                        
+                        salons: salons,
+                        
+                        }).then(response => {
+                            
+                            this.codesend = true
+                            this.result= response.data
+                            console.log(result,'+++++++++++++++++++++++++++++++++++++++++++')
+                        })
+                        .catch((err) => {
+                                
+                                this.codesend = true
+                                this.result['reponse'] = "Probleme de connexion , veuillez contactez l'administrateur"
+                                this.result['succes'] = false
+                        })
+                    },
+                    
+                }
+            });
+        </script>
+    </body>
+</html>

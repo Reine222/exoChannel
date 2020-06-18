@@ -38,6 +38,7 @@ class Tchater(models.Model):
 
     # TODO: Define fields here
     utilisateur = models.ForeignKey(Profile, related_name="profileTchat", on_delete=models.CASCADE)
+    salon = models.ForeignKey("Salon", related_name="salonTchat", on_delete=models.CASCADE)
     message = models.TextField()
     date_add = models.DateTimeField(auto_now=False, auto_now_add=True)
     status = models.BooleanField()
@@ -49,4 +50,20 @@ class Tchater(models.Model):
         verbose_name_plural = 'Tchaters'
     
 
+
+class Salon(models.Model):
+    """Model definition for Salon."""
+
+    # TODO: Define fields here
+    nom = models.CharField(max_length=250)
+
+    class Meta:
+        """Meta definition for Salon."""
+
+        verbose_name = 'Salon'
+        verbose_name_plural = 'Salons'
+
+    def __str__(self):
+        """Unicode representation of Salon."""
+        return self.nom
 

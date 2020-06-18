@@ -10,7 +10,24 @@ from django.http import JsonResponse
 # Create your views here.
 @login_required
 def home(request):
-    return render(request, "pages/index.html")
+    salon = models.Salon.objects.all()
+    salonOne = models.Salon.objects.get(pk=1)
+
+    data={
+        'salon': salon,
+        'salonOne': salonOne,
+    }
+    return render(request, "pages/index.html", data)
+
+def salon(request):
+    salon = models.Salon.objects.all()
+    salonOne = models.Salon.objects.get(pk=1)
+
+    data={
+        'salon': salon,
+        'salonOne': salonOne,
+    }
+    return render(request, "pages/salon.html", data)
 
 
 
@@ -22,7 +39,7 @@ def loginUser(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect('salon')
         else:
             return redirect('login')
     return render(request, "pages/login.html")
@@ -64,27 +81,45 @@ def register(request):
 
 
 
-def sendmessage(request):
-    succes=False
-    reponse = ""
+def connect(request):
+    succes = False
+    print('////////////////////////////////////////// REINE //////////////////////////////////////////')
     try:
+        print('////////////////////////////////////////// RRRRR //////////////////////////////////////////')
         postdata = json.loads(request.body.decode('utf-8'))
-        
+        print('///////////////////////////////////////////////     ZZZZZ     /////////////////////////////////////')
         message = postdata['message']
-        print(message, '////////////////////////////////////////////////////////////////////////////////////')
-        
-        # user = postdata['user']
-        # print(user, '////////////////////////////////////////////////////////////////////////////////////')
-        # message = postdata['message']
-        # print(message, '********************************************************************************')
-    
+        print(message,'///////////////////////////////////////////////     ZZZZZ     /////////////////////////////////////')
+        username = postdata['username']
+        print(username, '////////////////////////////////////////////       $$$$ OK $$$$       ////////////////////////////////////////')
+        succes = True
     except Exception as e:
         succes = False
         reponse = "Un probleme survennu lors de l'enregistrement"
 
     datas = {
         'succes':succes,
-        'reponse':reponse,
     }
+    return JsonResponse(datas, safe=False)
 
+
+
+
+def sendsalon(request):
+    succes = False
+    print('////////////////////////////////////////////////////////////////////////////////////')
+    try:
+        print('////////////////////////////////////////////////////////////////////////////////////')
+        postdata = json.loads(request.body.decode('utf-8'))
+        print('////////////////////////////////////////////////////////////////////////////////////')
+        nomSal = postdata['nomSal']
+        print(nomSal, '////////////////////////////////////////////$$$$ OK $$$$////////////////////////////////////////')
+        succes = True
+    except Exception as e:
+        succes = False
+        reponse = "Un probleme survennu lors de l'enregistrement"
+
+    datas = {
+        'succes':succes,
+    }
     return JsonResponse(datas, safe=False)

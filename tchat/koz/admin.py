@@ -21,8 +21,10 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(models.Tchater)
 class TchaterAdmin(admin.ModelAdmin):
-    list_display = ('utilisateur','message')
+    list_display = ('utilisateur', 'salon', 'message')
     
 
 
-
+@admin.register(models.Salon)
+class SalonAdmin(admin.ModelAdmin):
+    list_display = ('nom',)

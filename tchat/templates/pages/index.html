@@ -24,10 +24,53 @@
         <!-- <script src="/static/script.js"></script> --> 
 
         <title>*** Tchat ***</title>
+        
+
     </head>
     <body>
         <div id="app">
-            <h1>TCHAT User: {{request.user}}</h1>
+
+            <nav class="navbar navbar-expand-sm bg-light justify-content-center">
+                <h2>Salon</h2>
+            </nav>
+
+            <div class="row">
+                <div class="col-md-6" style="text-align: center;"><h1>Username : </h1></div>
+                <div class="col-md-6" style="text-align: center;"><h1>{{request.user}}</h1></div>
+            </div><br>
+
+            <div class="card-columns container">
+                
+                {% for sal in salon %}
+                    <div style="height: 76px;" class="card bg-primary">
+                        <div class="card-body text-center">
+                        <button v-on:click="connect('{{sal.nom}}')"><h1 style="color: rgb(53, 5, 49);">{{sal.nom}}</h1></button>
+                        </div>
+                    </div>
+                {% endfor %}
+                    
+                
+            </div>
+            <div class="container">
+                <div style="height: 56px;" class="card bg-warning">
+                    <h3 style="text-align: center;"> Ajouter un salon</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="col-md-6">
+                                    <input type="text" v-model="nomSal" class="form-control" placeholder="Enter le nom du salon" id="email">
+                                </div>
+                                <div class="col-md-6">
+                                    <button v-on:click="sendsalon" type="submit" class="btn btn-outline-secondary">Secondary</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <hr><br><br>
+
             <div style="width: 1200px; height: 700px;" class="col-sm-3 col-sm-offset-4 frame">
                 <ul>
                     <li v-for='item in reponse' style="width:100%">
@@ -49,9 +92,7 @@
                     {% endif %}
                     </li>
 
-                    <!-- <li v-for='item in reponse'>
-                        ${item.user} : ${item.mes}
-                    </li> -->
+                  
                 </ul>
                 <div>
                     <div class="msj-rta macro">                        
@@ -61,12 +102,13 @@
 
                     </div>
                     <div style="padding:10px;">
-                        <button @click="sendmessage" type="button" class="btn btn-primary">Send</button>
+                        <button v-on:click="sendmessage" type="button" class="btn btn-primary">Send</button>
                     </div>                
                 </div>
             </div>
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/reconnecting-websocket@4.1.10/dist/reconnecting-websocket-cjs.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vue-websocket@0.2.3/dist/vue-websocket.min.js"></script>
@@ -76,7 +118,8 @@
                 data: {
                     message: "",
                     reponse: [],
-                    username:"{{request.user}}",
+                    username:"{{request.user.id}}",
+                    nomSal: ""
                 },
                 delimiters: ["${", "}"],
                 mounted: function() {
@@ -84,8 +127,10 @@
                 },
                 methods: {
                 
-                    connect() {
-                        roomName = "hello"
+                    connect(salon) {
+                        
+                        roomName = salon
+                        console.log(roomName)
                         this.socket = new WebSocket('ws://127.0.0.1:8000/ws/chat/' + roomName + '/');
                         this.socket.onopen = () => {
                             this.status = "connected";
@@ -100,10 +145,33 @@
                             this.reponse.push(wsdata.message)    
                             console.log(this.reponse)
                             
+                            axios.defaults.xsrfCookieName = 'csrftoken'
+                            axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+                            axios.post('http://127.0.0.1:8000/post_message', {
+                            
+                            message: wsdata.message.mes,
+                            username: wsdata.message.user,
+                            
+                            
+                            
+                            }).then(response => {
+                                
+                                this.codesend = true
+                                this.result= response.data
+                                console.log(result,'+++++++++++++++++++++++++++++++++++++++++++')
+                            })
+                            .catch((err) => {
+                                    
+                                    this.codesend = true
+                                    this.result['reponse'] = "Probleme de connexion , veuillez contactez l'administrateur"
+                                    this.result['succes'] = false
+                            })
                             
                             };
                             
                         };
+                        
+                        
                     },
                     disconnect() {
                         this.socket.close();
@@ -117,32 +185,42 @@
                             'message':{ 
                                 'mes':this.message,
                                 'user':this.username 
-                            }
+                            },
+                            //messages: "",
+                            //user: "{{request.user}}"
                         }
                         this.socket.send(JSON.stringify(data));
                         
                         console.log(data, '..............................................');
+                        
+                        
+                    },
+
+                    sendsalon: function(){
+                        data = {
+                            nomSal: "",
+                            response: "",
+                        }
+                        console.log(nomSal)
             
-                        // axios.defaults.xsrfCookieName = 'csrftoken'
-                        // axios.defaults.xsrfHeaderName = 'X-CSRFToken'
-                        // axios.post('http://127.0.0.1:8000/post_message', {
+                        axios.defaults.xsrfCookieName = 'csrftoken'
+                        axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+                        axios.post('http://127.0.0.1:8000/post_salon', {
                         
-                        // message: message,
+                        nomSal: nomSal,
                         
-                        // }).then(response => {
+                        }).then(response => {
                             
-                        //     this.codesend = true
-                        //     this.result= response.data
-                        //     console.log(result,'+++++++++++++++++++++++++++++++++++++++++++')
-                        // })
-                        // .catch((err) => {
+                            this.codesend = true
+                            this.result= response.data
+                            console.log(result,'+++++++++++++++++++++++++++++++++++++++++++')
+                        })
+                        .catch((err) => {
                                 
-                        //         this.codesend = true
-                        //         this.result['reponse'] = "Probleme de connexion , veuillez contactez l'administrateur"
-                        //         this.result['succes'] = false
-
-
-                        // })
+                                this.codesend = true
+                                this.result['reponse'] = "Probleme de connexion , veuillez contactez l'administrateur"
+                                this.result['succes'] = false
+                        })
                     },
                     updateAdmin: function(){
                         
@@ -154,5 +232,6 @@
                 }
     });
         </script>
+       
     </body>
 </html>
