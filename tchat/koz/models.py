@@ -37,11 +37,11 @@ class Tchater(models.Model):
     """Model definition for Tchater."""
 
     # TODO: Define fields here
-    utilisateur = models.ForeignKey(Profile, related_name="profileTchat", on_delete=models.CASCADE)
+    utilisateur = models.ForeignKey(User, related_name="userTchat", on_delete=models.CASCADE)
     salon = models.ForeignKey("Salon", related_name="salonTchat", on_delete=models.CASCADE)
     message = models.TextField()
     date_add = models.DateTimeField(auto_now=False, auto_now_add=True)
-    status = models.BooleanField()
+    status = models.BooleanField(default=True)
 
     class Meta:
         """Meta definition for Tchater."""

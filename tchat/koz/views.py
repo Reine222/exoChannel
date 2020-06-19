@@ -12,10 +12,12 @@ from django.http import JsonResponse
 def home(request):
     salon = models.Salon.objects.all()
     salonOne = models.Salon.objects.get(pk=1)
+    profile = models.Profile.objects.filter(user=request.user)
 
     data={
         'salon': salon,
         'salonOne': salonOne,
+        'profile': profile,
     }
     return render(request, "pages/index.html", data)
 
@@ -83,16 +85,36 @@ def register(request):
 
 def connect(request):
     succes = False
-    print('////////////////////////////////////////// REINE //////////////////////////////////////////')
     try:
-        print('////////////////////////////////////////// RRRRR //////////////////////////////////////////')
         postdata = json.loads(request.body.decode('utf-8'))
         print('///////////////////////////////////////////////     ZZZZZ     /////////////////////////////////////')
         message = postdata['message']
-        print(message,'///////////////////////////////////////////////     ZZZZZ     /////////////////////////////////////')
+        print(message,'///////////////////////////////////////////////     MESSAGE     /////////////////////////////////////')
         username = postdata['username']
-        print(username, '////////////////////////////////////////////       $$$$ OK $$$$       ////////////////////////////////////////')
-        succes = True
+        print(username, '////////////////////////////////////////////       USERNAME       ////////////////////////////////////////')
+        salonN = postdata['salonN']
+        print(salonN, '////////////////////////////////////////////       SALON       ////////////////////////////////////////')
+        
+        if message is not None and username is not None and salonN is not None :
+            utili = User.objects.get(id=username)
+            print(utili, '////////////////////////////////////////// USER //////////////////////////////////////////')
+
+            sal = models.Salon.objects.get(nom=salonN)
+            print(utili,sal, '////////////////////////////////////////// USER //////////////////////////////////////////')
+            try:
+                tchat = models.Tchater()
+                print('////////////////////////////////////////// REINE //////////////////////////////////////////')
+                tchat.utilisateur = utili
+                
+                tchat.salon = sal
+                tchat.message = message
+                print('////////////////////////////////////////// REINE //////////////////////////////////////////')
+                tchat.save()
+                print(tchat, '////////////////////////////////////////////       OK OK OK OK OK       ////////////////////////////////////////')
+                succes = True
+            except Exception as e:
+                print(e, '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            
     except Exception as e:
         succes = False
         reponse = "Un probleme survennu lors de l'enregistrement"
@@ -112,12 +134,17 @@ def sendsalon(request):
         print('////////////////////////////////////////////////////////////////////////////////////')
         postdata = json.loads(request.body.decode('utf-8'))
         print('////////////////////////////////////////////////////////////////////////////////////')
-        nomSal = postdata['nomSal']
-        print(nomSal, '////////////////////////////////////////////$$$$ OK $$$$////////////////////////////////////////')
+        nomsal = postdata['nomsal']
+        print(nomsal, '////////////////////////////////////////////$$$$ OK $$$$////////////////////////////////////////')
+        salon = models.Salon()
+        salon.nom = nomsal
+        salon.save()
+        print('////////////////////////////////////////// OK OK OK  //////////////////////////////////////////')
         succes = True
     except Exception as e:
         succes = False
         reponse = "Un probleme survennu lors de l'enregistrement"
+        print(e)
 
     datas = {
         'succes':succes,
