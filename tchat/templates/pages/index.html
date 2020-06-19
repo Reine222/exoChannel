@@ -132,7 +132,7 @@
                         
                         roomName = salon
                         console.log(roomName)
-                        this.socket = new WebSocket('ws://192.168.1.109:4000/ws/chat/' + roomName + '/');
+                        this.socket = new WebSocket('ws://127.0.0.1:8000/ws/chat/' + roomName + '/');
                         this.socket.onopen = () => {
                             this.status = "connected";
                             console.log("connecte")
@@ -148,7 +148,7 @@
 
                             axios.defaults.xsrfCookieName = 'csrftoken'
                             axios.defaults.xsrfHeaderName = 'X-CSRFToken'
-                            axios.post('http://192.168.1.109:4000/post_message', {
+                            axios.post('http://127.0.0.1:8000/post_message', {
                             
                             message: wsdata.message.mes,
                             username: wsdata.message.user,
@@ -205,7 +205,7 @@
                         
                         axios.defaults.xsrfCookieName = 'csrftoken'
                         axios.defaults.xsrfHeaderName = 'X-CSRFToken'
-                        axios.post('http://192.168.1.109:4000/post_salon', {
+                        axios.post('http://127.0.0.1:8000/post_salon', {
                         nomsal: nomsal  
                         }).then(response => {
                             this.codesend = true
